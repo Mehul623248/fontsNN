@@ -41,6 +41,8 @@ def train_test_split(filename, train=[],test=[], corr=[], split=0.8):
 
 
   
+def sigmoid(set):
+    return 1/(1+ e**(-set))
    
 def weightBias(trainingSet,testingSet,corr):  
     trainings = trainingSet
@@ -63,24 +65,56 @@ def weightBias(trainingSet,testingSet,corr):
 
     weights2=  np.random.randn(M,K)
     bias2=  np.random.randn(K)
-    print(corr)
+
+    Z= []
+    Z2= []
+    corre = np.array(np.split(corr[0],2500))
     for i in range(len(X_batch)):
         A=  np.dot(X_batch[i], weights) + bias 
-        sigmoid_A= 1/(1+ e**(-A))
-        A_2=  np.dot(sigmoid_A,weights2) + bias2 
-        sigmoid_A2= 1/(1+ e**(-(A_2)))
-      #  print(getAccuracy(corr1, sigmoid_A2))
-
+        Z= sigmoid(A)
+        A_2=  np.dot(Z,weights2) + bias2 
+        Z2 = sigmoid(A_2)
+        print(getAccuracy(corre[i],Z2))
+        #print(X_batch[i])
+        
+    
+   # print(corre[0])
+'''
+    for r in range(10000):
+          if corr[0][r] == Z2[0]:
+            print("C")
+    for i in range(10000):
+        if corr[0][i] == Z2[i]:
+            print("C")
+'''
+   
     
 
 def getAccuracy (testings, predictions):
-    correct = 0
-    for x in range(len(test)):
-        if testings[x][-1] is predictions[x]:
-            correct+=1
-    return (correct/(float(len(testings))*100))
+   # print(testings.shape)
+    #print(predictions.shape)  
 
-def update(initial, learning_rate):
+    #print(testings)
+    correct = 0
+    for x in range(len(testings)):
+        if testings[x] == np.rint(predictions[x]):
+            correct+=1
+    return (correct/(float(len(testings)))*100)
+
+def update(predictions, testings, X_batch,learning_rate):
+    
+    cost_Array = []
+    N = float(len(testings))
+    for i in range(0, len(testings)):
+        y= testings[i]
+        x= predictions[i]
+        pred_gradient = -(1) * (y/x - ((1-y)/(1-x)))
+        cost_Array.append(pred_gradient)
+    
+    cost_Array[: -1]
+    
+    
+
     return 0
 
 def run():
