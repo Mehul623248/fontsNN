@@ -30,16 +30,18 @@ def train_test_split(filename, train=[],test=[], corr=[], split=0.8):
    a= np.mean(fonts[x])
    b= np.std(fonts[x])
    value =0
-   for x in range(len(fonts)-2):
+   z = np.delete(fonts, -1, axis=1)
+   #print(z)
+   for x in range(len(fonts)):
     if value < split*len(fonts):
-        train.append(((fonts[x] -a )/b))
+        train.append(((z[x] -a )/b))
         train2.append(fonts[x][3])
         value+=1
     else:
-        test.append(((fonts[x] -a )/b))
+        test.append(((z[x] -a )/b))
         test2.append(fonts[x][3])
 
-
+   #print(train)
   
 def sigmoid(set):
     return 1/(1+ e**(-set))
@@ -49,7 +51,7 @@ def weightBias(trainingSet,testingSet,corr):
     testing= testingSet
     #trainings.shape[0]
     #for i in range(len(testing)):
-   # print(testing)
+    #print(trainings)
     X_batch= np.split(trainingSet,2000)
     D= X_batch[0].shape[1]
     N= X_batch[1].shape[0]
@@ -58,7 +60,6 @@ def weightBias(trainingSet,testingSet,corr):
     bias = np.random.randn(M)
     weights=  np.random.randn(D,M)
     
-   
       
     
     
@@ -74,8 +75,9 @@ def weightBias(trainingSet,testingSet,corr):
         Z= sigmoid(A)
         A_2=  np.dot(Z,weights2) + bias2 
         Z2 = sigmoid(A_2)
-        print(getAccuracy(corre[i],Z2))
-        #print(X_batch[i])
+        getAccuracy(corre[i],Z2)
+        cost(Z2, corre[i], corr[0], learning_rate)
+        
         
     
    # print(corre[0])
@@ -101,8 +103,21 @@ def getAccuracy (testings, predictions):
             correct+=1
     return (correct/(float(len(testings)))*100)
 
-def update(predictions, testings, X_batch,learning_rate):
+def cost(predictions, testings, X_batch,learning_rate):
     
+    cost_Array = []
+    y= testings
+    x= predictions
+    
+    
+    preds = -(1) * (y*np.log(x) + (1-y)*np.log(1-x))
+    
+    
+    print(preds[0][0])
+    return 0
+
+def gradientCost(predictions, testings, X_batch,learning_rate):
+
     cost_Array = []
     N = float(len(testings))
     for i in range(0, len(testings)):
@@ -111,11 +126,10 @@ def update(predictions, testings, X_batch,learning_rate):
         pred_gradient = -(1) * (y/x - ((1-y)/(1-x)))
         cost_Array.append(pred_gradient)
     
-    cost_Array[: -1]
+    print(cost_Array)
     
     
 
-    return 0
 
 def run():
     trainingSet=[]
