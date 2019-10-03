@@ -76,10 +76,11 @@ def weightBias(trainingSet,testingSet,corr):
         
         A_2=  np.dot(Z,weights2) + bias2 
         Z2 = sigmoid(A_2)
+        #print (weights2.shape)
         getAccuracy(corre[i],Z2)
         cost(Z2, corre[i], corr[0], learning_rate)
         gradientCost(Z2, corre[i])
-
+        backProp(gradientCost(Z2, corre[i]), Z2, Z,X_batch[i])
 
     
    # print(corre[0])
@@ -133,10 +134,14 @@ def gradientCost(predictions, testings):
     return predi
     
     
-def backProp(gradient_Cost,predictions,X_batch):
+def backProp(gradient_Cost,predictions, second_data,X_batch):
 
-  gradient_pred= (1/1+e^(-predictions))*(1-1/(1+e^(-predictions)))
-  #descent =gradient_Cost*X_batch
+  gradient_pred= (1/(1+e**(-second_data)))*(1-1/(1+e**(-second_data)))
+  gradient_pred2= (1/(1+e**(-predictions)))*(1-1/(1+e**(-predictions)))
+  #print(predictions.shape) *gradient_pred*X_batch
+  ds= np.dot(gradient_Cost,gradient_pred2)
+  print(gradient_pred2.shape)
+ # descent =  np.dot(gradient_Cost*gradient_pred2, second_data.T)
   return 0
 def run():
     trainingSet=[]
