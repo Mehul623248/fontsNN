@@ -139,10 +139,16 @@ def backProp(gradient_Cost,predictions, second_data,X_batch):
   gradient_pred= (1/(1+e**(-second_data)))*(1-1/(1+e**(-second_data)))
   gradient_pred2= (1/(1+e**(-predictions)))*(1-1/(1+e**(-predictions)))
   #print(predictions.shape) *gradient_pred*X_batch
-  ds= np.dot(gradient_Cost,gradient_pred2)
-  print(gradient_pred2.shape)
- # descent =  np.dot(gradient_Cost*gradient_pred2, second_data.T)
-  return 0
+  check = []
+  for i in range(len(gradient_pred2)):
+      preds = (gradient_Cost[i]*gradient_pred2[i])
+      check.append(preds)
+    
+      ds = np.asarray(check)
+  #ds= np.multiply(gradient_Cost,gradient_pred2)
+  descent =  np.dot(second_data.T, ds)
+  print(ds.shape)
+
 def run():
     trainingSet=[]
     testingSet=[]
