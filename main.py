@@ -11,6 +11,10 @@ test = []
 train2= []
 test2 = []
 corr1=[]
+W = np.zeros((4,16))
+B = np.zeros(16)
+W2 = np.zeros((16,1))
+B2= np.zeros(1)
 def train_test_split(filename, train=[],test=[], corr=[], split=0.8):
   
    with open(filename, 'r') as csvfile:
@@ -46,7 +50,7 @@ def train_test_split(filename, train=[],test=[], corr=[], split=0.8):
 def sigmoid(set):
     return 1/(1+ e**(-set))
    
-def weightBias(trainingSet,testingSet,corr):  
+def weightBias(trainingSet,testingSet,corr, W, B, W2, B2, boole):  
     trainings = trainingSet
     testing= testingSet
     #trainings.shape[0]
@@ -57,30 +61,35 @@ def weightBias(trainingSet,testingSet,corr):
     N= X_batch[1].shape[0]
     M= 16
     K=1
-    bias = np.random.randn(M)
-    weights=  np.random.randn(D,M)
-    
-      
-    
     
 
-    weights2=  np.random.randn(M,K)
-    bias2=  np.random.randn(K)
+    if boole== False:
+        B = np.random.randn(M)
+        W=  np.random.randn(D,M)
+        
+    
+        W2 =  np.random.randn(M,K)
+        B2=  np.random.randn(K)
+    elif boole:
+        B = B
+        W = W
+        W2 = W2
+        B2= B2
 
     Z= []
     Z2= []
     corre = np.array(np.split(corr[0],2500))
     for i in range(len(X_batch)):
-        A=  np.dot(X_batch[i], weights) + bias 
+        A=  np.dot(X_batch[i], W) + B 
         Z= sigmoid(A)
         
-        A_2=  np.dot(Z,weights2) + bias2 
+        A_2=  np.dot(Z,W2) + B2 
         Z2 = sigmoid(A_2)
-        #print (weights2.shape)
+        print (B2.shape)
         getAccuracy(corre[i],Z2)
-        cost(Z2, corre[i], corr[0], learning_rate)
+        cost(Z2, corre[i], corr[0])
         gradientCost(Z2, corre[i])
-        backProp(gradientCost(Z2, corre[i]), Z2, Z,X_batch[i])
+        backProp(gradientCost(Z2, corre[i]), Z2, Z,X_batch[i], testing, trainings, corr)
 
     
    # print(corre[0])
@@ -108,7 +117,7 @@ def getAccuracy (testings, predictions):
             correct+=1
     return (correct/(float(len(testings)))*100)
 
-def cost(predictions, testings, X_batch,learning_rate):
+def cost(predictions, testings, X_batch):
     
     cost_Array = []
     y= testings
@@ -134,21 +143,24 @@ def gradientCost(predictions, testings):
     return predi
     
     
-def backProp(gradient_Cost,predictions, second_data,X_batch):
+def backProp(gradient_Cost,predictions, second_data,X_batch, testings, training, corr):
 
   gradient_pred= (1/(1+e**(-second_data)))*(1-1/(1+e**(-second_data)))
   gradient_pred2= (1/(1+e**(-predictions)))*(1-1/(1+e**(-predictions)))
-  #print(predictions.shape) *gradient_pred*X_batch
+
   check = []
   for i in range(len(gradient_pred2)):
       preds = (gradient_Cost[i]*gradient_pred2[i])
       check.append(preds)
     
       ds = np.asarray(check)
-  #ds= np.multiply(gradient_Cost,gradient_pred2)
-  descent =  np.dot(second_data.T, ds)
-  print(ds.shape)
-
+  
+  weights2 =  np.dot(second_data.T, ds)
+  bias2 =  ds
+  '''
+  weights= 
+  bias =
+  '''
 def run():
     trainingSet=[]
     testingSet=[]
@@ -157,7 +169,7 @@ def run():
     corr1= np.array(corr)
     train = np.array(trainingSet)
     test= np.array(testingSet)
-    weightBias(train,test,corr1)
+    weightBias(train,test,corr1, W, B, W2, B2, boole=False)
     #print(testingSet)
 
 run()
